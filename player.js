@@ -5,10 +5,14 @@ window.Player = class Player {
     this.width = 38;
     this.height = 46;
     this.velocityX = 0;
+    this.velocityY = -11.5;
     this.acceleration = 0.62;
     this.maxSpeed = 6.2;
     this.drag = 0.84;
+    this.gravity = 0.45;
+    this.jumpStrength = 11.8;
     this.facing = 1;
+    this.squash = 0;
   }
 
   updateHorizontal() {
@@ -37,10 +41,29 @@ window.Player = class Player {
     }
   }
 
+  updateVertical() {
+    this.velocityY += this.gravity;
+    this.y += this.velocityY;
+
+    const feet = this.y + this.height / 2;
+    if (this.velocityY > 0 && feet >= GROUND_Y) {
+      this.y = GROUND_Y - this.height / 2;
+      this.jump();
+    }
+
+    this.squash = lerp(this.squash, 0, 0.16);
+  }
+
+  jump() {
+    this.velocityY = -this.jumpStrength;
+    this.squash = 0.18;
+  }
+
   draw() {
     push();
     translate(this.x, this.y);
-    scale(this.facing, 1);
+    const stretch = constrain(-this.velocityY * 0.006, -0.06, 0.08);
+    scale(this.facing * (1 + this.squash - stretch), 1 - this.squash + stretch);
 
     // Backpack
     noStroke();

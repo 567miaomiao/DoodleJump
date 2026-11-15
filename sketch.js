@@ -1,16 +1,25 @@
 const GAME_WIDTH = 420;
 const GAME_HEIGHT = 620;
+const PLAYER_START_Y = 490;
+const GROUND_Y = 550;
+
+let player;
 
 function setup() {
   const canvas = createCanvas(GAME_WIDTH, GAME_HEIGHT);
   canvas.parent("game-container");
   pixelDensity(1);
+  player = new Player(width / 2, PLAYER_START_Y);
 }
 
 function draw() {
   drawSky();
   drawNotebookLines();
-  drawPlaceholder();
+  drawPracticeGround();
+  player.updateHorizontal();
+  player.updateVertical();
+  player.draw();
+  drawControlLabel();
 }
 
 function drawSky() {
@@ -31,17 +40,26 @@ function drawNotebookLines() {
   line(36, 0, 36, height);
 }
 
-function drawPlaceholder() {
+function drawControlLabel() {
   noStroke();
   fill("#29344a");
   textAlign(CENTER, CENTER);
   textFont("Fredoka");
-  textStyle(BOLD);
-  textSize(30);
-  text("Ready for takeoff?", width / 2, height / 2 - 12);
-
-  fill("#6f7890");
   textStyle(NORMAL);
-  textSize(16);
-  text("The adventure is being assembled.", width / 2, height / 2 + 28);
+  textSize(14);
+  text("Automatic bounce engaged!", width / 2, 48);
+}
+
+function drawPracticeGround() {
+  noStroke();
+  fill("#62b65c");
+  rect(95, GROUND_Y, 230, 14, 9);
+  fill("#3c8248");
+  rect(112, GROUND_Y + 9, 196, 8, 5);
+}
+
+function keyPressed() {
+  if ([LEFT_ARROW, RIGHT_ARROW, 32].includes(keyCode)) {
+    return false;
+  }
 }

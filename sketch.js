@@ -2,20 +2,25 @@ const GAME_WIDTH = 420;
 const GAME_HEIGHT = 620;
 const PLAYER_START_Y = 490;
 const GROUND_Y = 550;
+const PLATFORM_COUNT = 9;
 
 let player;
+let platforms = [];
 
 function setup() {
   const canvas = createCanvas(GAME_WIDTH, GAME_HEIGHT);
   canvas.parent("game-container");
   pixelDensity(1);
   player = new Player(width / 2, PLAYER_START_Y);
+  generatePlatforms();
 }
 
 function draw() {
   drawSky();
   drawNotebookLines();
-  drawPracticeGround();
+  for (const platform of platforms) {
+    platform.draw();
+  }
   player.updateHorizontal();
   player.updateVertical();
   player.draw();
@@ -50,12 +55,20 @@ function drawControlLabel() {
   text("Automatic bounce engaged!", width / 2, 48);
 }
 
-function drawPracticeGround() {
-  noStroke();
-  fill("#62b65c");
-  rect(95, GROUND_Y, 230, 14, 9);
-  fill("#3c8248");
-  rect(112, GROUND_Y + 9, 196, 8, 5);
+function generatePlatforms() {
+  platforms = [];
+  platforms.push(new Platform(width / 2 - 70, GROUND_Y, 140));
+
+  let platformY = GROUND_Y - 78;
+  let previousX = width / 2 - 42;
+  for (let index = 1; index < PLATFORM_COUNT; index += 1) {
+    const platformWidth = random(72, 102);
+    const horizontalShift = random(-125, 125);
+    const platformX = constrain(previousX + horizontalShift, 18, width - platformWidth - 18);
+    platforms.push(new Platform(platformX, platformY, platformWidth));
+    previousX = platformX;
+    platformY -= random(67, 91);
+  }
 }
 
 function keyPressed() {

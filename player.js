@@ -2,6 +2,7 @@ window.Player = class Player {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.previousY = y;
     this.width = 38;
     this.height = 46;
     this.velocityX = 0;
@@ -42,16 +43,33 @@ window.Player = class Player {
   }
 
   updateVertical() {
+    this.previousY = this.y;
     this.velocityY += this.gravity;
     this.y += this.velocityY;
+    this.squash = lerp(this.squash, 0, 0.16);
+  }
 
-    const feet = this.y + this.height / 2;
-    if (this.velocityY > 0 && feet >= GROUND_Y) {
-      this.y = GROUND_Y - this.height / 2;
-      this.jump();
+  resolvePlatformLandings(platformList) {
+    if (this.velocityY <= 0) {
+      return;
     }
 
-    this.squash = lerp(this.squash, 0, 0.16);
+    const previousFeet = this.previousY + this.height / 2;
+    const currentFeet = this.y + this.height / 2;
+    const playerLeft = this.x - this.width * 0.32;
+    const playerRight = this.x + this.width * 0.32;
+
+    for (const platform of platformList) {
+      const overlapsHorizontally =
+        playerRight > platform.x && playerLeft < platform.x + platform.width;
+      const crossedPlatformTop = previousFeet <= platform.y && currentFeet >= platform.y;
+
+      if (overlapsHorizontally && crossedPlatformTop) {
+        this.y = platform.y - this.height / 2;
+        this.jump();
+        return;
+      }
+    }
   }
 
   jump() {

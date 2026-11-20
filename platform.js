@@ -6,6 +6,12 @@ window.Platform = class Platform {
     this.height = 13;
   }
 
+  reset(x, y, platformWidth) {
+    this.x = x;
+    this.y = y;
+    this.width = platformWidth;
+  }
+
   draw() {
     push();
     noStroke();

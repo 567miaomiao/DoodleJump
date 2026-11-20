@@ -3,9 +3,11 @@ const GAME_HEIGHT = 620;
 const PLAYER_START_Y = 490;
 const GROUND_Y = 550;
 const PLATFORM_COUNT = 9;
+const SCROLL_THRESHOLD = 235;
 
 let player;
 let platforms = [];
+let heightClimbed = 0;
 
 function setup() {
   const canvas = createCanvas(GAME_WIDTH, GAME_HEIGHT);
@@ -23,6 +25,8 @@ function draw() {
   }
   player.updateHorizontal();
   player.updateVertical();
+  updateScrollingWorld();
+  player.resolvePlatformLandings(platforms);
   player.draw();
   drawControlLabel();
 }
@@ -68,6 +72,42 @@ function generatePlatforms() {
     platforms.push(new Platform(platformX, platformY, platformWidth));
     previousX = platformX;
     platformY -= random(67, 91);
+  }
+}
+
+function updateScrollingWorld() {
+  if (player.y >= SCROLL_THRESHOLD || player.velocityY >= 0) {
+    return;
+  }
+
+  const scrollAmount = SCROLL_THRESHOLD - player.y;
+  player.y = SCROLL_THRESHOLD;
+  player.previousY += scrollAmount;
+  heightClimbed += scrollAmount;
+
+  for (const platform of platforms) {
+    platform.y += scrollAmount;
+  }
+
+  recyclePlatforms();
+}
+
+function recyclePlatforms() {
+  for (const platform of platforms) {
+    if (platform.y <= height + 30) {
+      continue;
+    }
+
+    const topPlatform = platforms.reduce((highest, current) =>
+      current.y < highest.y ? current : highest,
+    );
+    const nextWidth = random(70, 100);
+    const nextX = constrain(
+      topPlatform.x + random(-135, 135),
+      18,
+      width - nextWidth - 18,
+    );
+    platform.reset(nextX, topPlatform.y - random(68, 92), nextWidth);
   }
 }
 

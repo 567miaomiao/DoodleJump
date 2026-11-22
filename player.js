@@ -60,12 +60,17 @@ window.Player = class Player {
     const playerRight = this.x + this.width * 0.32;
 
     for (const platform of platformList) {
+      if (!platform.canLand()) {
+        continue;
+      }
+
       const overlapsHorizontally =
         playerRight > platform.x && playerLeft < platform.x + platform.width;
       const crossedPlatformTop = previousFeet <= platform.y && currentFeet >= platform.y;
 
       if (overlapsHorizontally && crossedPlatformTop) {
         this.y = platform.y - this.height / 2;
+        platform.onLanded();
         this.jump();
         return;
       }

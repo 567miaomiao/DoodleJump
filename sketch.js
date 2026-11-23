@@ -21,6 +21,7 @@ function draw() {
   drawSky();
   drawNotebookLines();
   for (const platform of platforms) {
+    platform.update();
     platform.draw();
   }
   player.updateHorizontal();
@@ -61,7 +62,7 @@ function drawControlLabel() {
 
 function generatePlatforms() {
   platforms = [];
-  platforms.push(new Platform(width / 2 - 70, GROUND_Y, 140));
+  platforms.push(new Platform(width / 2 - 70, GROUND_Y, 140, "normal"));
 
   let platformY = GROUND_Y - 78;
   let previousX = width / 2 - 42;
@@ -69,10 +70,18 @@ function generatePlatforms() {
     const platformWidth = random(72, 102);
     const horizontalShift = random(-125, 125);
     const platformX = constrain(previousX + horizontalShift, 18, width - platformWidth - 18);
-    platforms.push(new Platform(platformX, platformY, platformWidth));
+    const platformType = index === 3 ? "moving" : index === 5 ? "breakable" : choosePlatformType();
+    platforms.push(new Platform(platformX, platformY, platformWidth, platformType));
     previousX = platformX;
     platformY -= random(67, 91);
   }
+}
+
+function choosePlatformType() {
+  const roll = random();
+  if (roll < 0.2) return "moving";
+  if (roll < 0.36) return "breakable";
+  return "normal";
 }
 
 function updateScrollingWorld() {
@@ -107,7 +116,7 @@ function recyclePlatforms() {
       18,
       width - nextWidth - 18,
     );
-    platform.reset(nextX, topPlatform.y - random(68, 92), nextWidth);
+    platform.reset(nextX, topPlatform.y - random(68, 92), nextWidth, choosePlatformType());
   }
 }
 

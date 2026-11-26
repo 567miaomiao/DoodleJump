@@ -17,8 +17,8 @@ window.Player = class Player {
   }
 
   updateHorizontal() {
-    const movingLeft = keyIsDown(LEFT_ARROW) || keyIsDown(65);
-    const movingRight = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
+    const movingLeft = keyIsDown(LEFT_ARROW) || keyIsDown(65) || touchDirection < 0;
+    const movingRight = keyIsDown(RIGHT_ARROW) || keyIsDown(68) || touchDirection > 0;
 
     if (movingLeft !== movingRight) {
       const direction = movingLeft ? -1 : 1;

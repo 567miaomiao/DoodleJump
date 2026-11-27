@@ -10,13 +10,17 @@ let platforms = [];
 let heightClimbed = 0;
 let gameState = "start";
 let bestScore = 0;
+let touchDirection = 0;
 
 function setup() {
   const canvas = createCanvas(GAME_WIDTH, GAME_HEIGHT);
   canvas.parent("game-container");
+  canvas.attribute("role", "img");
+  canvas.attribute("aria-label", "Skybound Doodle game. Use arrow keys or A and D to move.");
   pixelDensity(1);
   bestScore = loadBestScore();
   resetGame();
+  bindTouchControls();
 }
 
 function draw() {
@@ -66,6 +70,29 @@ function resetGame() {
   player = new Player(width / 2, PLAYER_START_Y);
   heightClimbed = 0;
   generatePlatforms();
+}
+
+function bindTouchControls() {
+  const controls = [
+    { element: document.querySelector("#move-left"), direction: -1 },
+    { element: document.querySelector("#move-right"), direction: 1 },
+  ];
+
+  for (const control of controls) {
+    const startMoving = (event) => {
+      event.preventDefault();
+      touchDirection = control.direction;
+    };
+    const stopMoving = (event) => {
+      event.preventDefault();
+      if (touchDirection === control.direction) touchDirection = 0;
+    };
+
+    control.element.addEventListener("pointerdown", startMoving);
+    control.element.addEventListener("pointerup", stopMoving);
+    control.element.addEventListener("pointercancel", stopMoving);
+    control.element.addEventListener("pointerleave", stopMoving);
+  }
 }
 
 function generatePlatforms() {

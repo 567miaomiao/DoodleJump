@@ -37,13 +37,14 @@ Then open <http://localhost:8000>. Opening `index.html` directly may also work, 
 ```text
 .
 ├── index.html      # Page structure and p5.js loading
-├── style.css       # Responsive page and touch-control styles
-├── sketch.js       # Game loop, Player class, and Platform class
+├── sketch.js       # Game loop, state, and world orchestration
+├── player.js       # Player movement, physics, collision, and drawing
+├── platform.js     # Platform behavior, recycling, and drawing
 ├── favicon.svg     # Code-native site icon
 └── .nojekyll       # Keeps GitHub Pages in static-file mode
 ```
 
-The `Player` class owns movement, jump physics, wrapping, collision resolution, and drawing. The `Platform` class owns platform type, motion, break behavior, recycling, and drawing. The p5.js `draw()` loop coordinates game state and world scrolling.
+Responsive page styles live inside `index.html`, so the game has no separate CSS file. The `Player` class owns movement, jump physics, wrapping, collision resolution, and drawing. The `Platform` class owns platform type, motion, break behavior, recycling, and drawing. The p5.js `draw()` loop in `sketch.js` coordinates game state and world scrolling.
 
 ## Deploy to GitHub Pages
 
@@ -62,6 +63,8 @@ The p5.js library and web fonts are loaded from public CDNs, so the deployed gam
 The project is checked with:
 
 ```bash
+node --check player.js
+node --check platform.js
 node --check sketch.js
 git diff --check
 ```
